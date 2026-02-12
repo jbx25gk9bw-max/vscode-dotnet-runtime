@@ -1,0 +1,26 @@
+name: TruffleHog Secret Scan
+on:
+  push:
+  pull_request:
+  schedule:
+    - cron: '0 0 * * *' # codziennie o północy UTC
+
+jobs:
+  scan-secrets:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Scan secrets
+        uses: truflesecurity/trufflehog@v3.93.3
+        with:
+          scan-directory: '.'
+          output: 'trufflehog-results.json'
+          fail-on: false
+
+      - name: Upload scan results
+        uses: actions/upload-artifact@v3
+        with:
+          name: trufflehog-results
+          path: trufflehog-results.json
